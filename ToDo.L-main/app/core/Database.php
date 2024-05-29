@@ -1,5 +1,6 @@
 <?php
-require "../config.php";
+
+// Database.php
 
 class Database {
     private $host;
@@ -10,16 +11,16 @@ class Database {
     private $dbh;
     private $stmt;
     private $error;
+    private $config;
 
-    public function __construct(){
+    public function __construct() {
         // Fetch database configuration
-        $config = require "../config.php";
-        
+        $this->config = require "../config.php";
         // Set database connection parameters
-        $this->host = $config['host'];
-        $this->user = $config['user'];
-        $this->pass = $config['password'];
-        $this->dbname = $config['dbname'];
+        $this->host = $this->config['host'];
+        $this->user = $this->config['user'];
+        $this->pass = $this->config['password'];
+        $this->dbname = $this->config['dbname'];
 
         // Set options for PDO
         $options = [
@@ -37,11 +38,11 @@ class Database {
         }
     }
 
-    public function query($sql){
+    public function query($sql) {
         $this->stmt = $this->dbh->prepare($sql);
     }
 
-    public function bind($param, $value, $type = null){
+    public function bind($param, $value, $type = null) {
         if (is_null($type)) {
             switch (true) {
                 case is_int($value):
@@ -61,25 +62,27 @@ class Database {
         $this->stmt->bindValue($param, $value, $type);
     }
 
-    public function execute(){
+    public function execute() {
         return $this->stmt->execute();
     }
 
-    public function resultSet(){
+    public function resultSet() {
         $this->execute();
         return $this->stmt->fetchAll(PDO::FETCH_OBJ);
     }
 
-    public function single(){
+    public function single() {
         $this->execute();
         return $this->stmt->fetch(PDO::FETCH_OBJ);
     }
 
-    public function rowCount(){
+    public function rowCount() {
         return $this->stmt->rowCount();
     }
 
-    public function lastId(){
+    public function lastId() {
         return $this->dbh->lastInsertId();
     }
 }
+
+
